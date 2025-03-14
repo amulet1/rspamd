@@ -463,7 +463,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	/* Check if we have seen this pointer */
 	for (i = 0; i < TRACE_POINTS; i++) {
 		if (trace->traces[i] == self) {
-			r = rspamd_snprintf(d, remain + 1, "ref(%p)", self);
+			r = rspamd_snprintf(d, remain, "ref(%p)", self);
 
 			d += r;
 
@@ -475,7 +475,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	trace->cur_level++;
 
 	lua_pushvalue(L, pos);
-	r = rspamd_snprintf(d, remain + 1, "{");
+	r = rspamd_snprintf(d, remain, "{");
 	remain -= r;
 	d += r;
 
@@ -491,16 +491,16 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 		last_seq = i;
 
 		if (!first) {
-			r = rspamd_snprintf(d, remain + 1, ", ");
+			r = rspamd_snprintf(d, remain, ", ");
 			MOVE_BUF(d, remain, r);
 		}
 
-		r = rspamd_snprintf(d, remain + 1, "[%d] = ", i);
+		r = rspamd_snprintf(d, remain, "[%d] = ", i);
 		MOVE_BUF(d, remain, r);
 		tpos = lua_gettop(L);
 
 		if (lua_topointer(L, tpos) == self) {
-			r = rspamd_snprintf(d, remain + 1, "__self");
+			r = rspamd_snprintf(d, remain, "__self");
 		}
 		else {
 			r = lua_logger_out_type(L, tpos, d, remain, trace, esc_type);
@@ -529,20 +529,20 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 		}
 
 		if (!first) {
-			r = rspamd_snprintf(d, remain + 1, ", ");
+			r = rspamd_snprintf(d, remain, ", ");
 			MOVE_BUF(d, remain, r);
 		}
 
 		/* Preserve key */
 		lua_pushvalue(L, -2);
-		r = rspamd_snprintf(d, remain + 1, "[%s] = ",
+		r = rspamd_snprintf(d, remain, "[%s] = ",
 							lua_tostring(L, -1));
 		lua_pop(L, 1); /* Remove key */
 		MOVE_BUF(d, remain, r);
 		tpos = lua_gettop(L);
 
 		if (lua_topointer(L, tpos) == self) {
-			r = rspamd_snprintf(d, remain + 1, "__self");
+			r = rspamd_snprintf(d, remain, "__self");
 		}
 		else {
 			r = lua_logger_out_type(L, tpos, d, remain, trace, esc_type);
@@ -554,7 +554,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 
 	lua_settop(L, old_top);
 
-	r = rspamd_snprintf(d, remain + 1, "}");
+	r = rspamd_snprintf(d, remain, "}");
 	d += r;
 
 	trace->cur_level--;
