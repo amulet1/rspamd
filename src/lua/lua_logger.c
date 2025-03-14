@@ -592,16 +592,16 @@ gsize lua_logger_out_type(lua_State *L, int pos,
 		r = lua_logger_out_userdata(L, pos, outbuf, len);
 		break;
 	case LUA_TFUNCTION:
-		r = rspamd_snprintf(outbuf, len + 1, "function");
+		r = rspamd_snprintf(outbuf, len, "function");
 		break;
 	case LUA_TLIGHTUSERDATA:
-		r = rspamd_snprintf(outbuf, len + 1, "0x%p", lua_topointer(L, pos));
+		r = rspamd_snprintf(outbuf, len, "0x%p", lua_topointer(L, pos));
 		break;
 	case LUA_TNIL:
-		r = rspamd_snprintf(outbuf, len + 1, "nil");
+		r = rspamd_snprintf(outbuf, len, "nil");
 		break;
 	case LUA_TNONE:
-		r = rspamd_snprintf(outbuf, len + 1, "no value");
+		r = rspamd_snprintf(outbuf, len, "no value");
 		break;
 	default:
 		/* Try to push everything as string using tostring magic */
