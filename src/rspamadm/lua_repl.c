@@ -232,7 +232,6 @@ rspamadm_exec_input(lua_State *L, const char *input)
 	int i, cbref;
 	int top = 0;
 	char outbuf[8192];
-	struct lua_logger_trace tr;
 
 	struct thread_entry *thread = lua_thread_pool_get_for_config(rspamd_main->cfg);
 	L = thread->lua_state;
@@ -272,8 +271,7 @@ rspamadm_exec_input(lua_State *L, const char *input)
 				rspamd_printf("local function: %d\n", cbref);
 			}
 			else {
-				memset(&tr, 0, sizeof(tr));
-				lua_logger_out_type(L, i, outbuf, sizeof(outbuf) - 1, &tr,
+				lua_logger_out(L, i, outbuf, sizeof(outbuf) - 1,
 									LUA_ESCAPE_UNPRINTABLE);
 				rspamd_printf("%s\n", outbuf);
 			}
