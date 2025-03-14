@@ -281,8 +281,8 @@ lua_logger_char_safe(int t, unsigned int esc_type)
 
 static gsize
 lua_logger_out_str(lua_State *L, int pos,
-				   char *outbuf, gsize len,
-				   enum lua_logger_escape_type esc_type)
+			   char *outbuf, gsize len,
+			   enum lua_logger_escape_type esc_type)
 {
 	static const char hexdigests[16] = "0123456789abcdef";
 	gsize slen;
@@ -332,11 +332,8 @@ static gsize
 lua_logger_out_boolean(lua_State *L, int pos, char *outbuf, gsize len)
 {
 	gboolean val = lua_toboolean(L, pos);
-	gsize r = 0;
 
-	r = rspamd_strlcpy(outbuf, val ? "true" : "false", len + 1);
-
-	return r;
+	return rspamd_snprintf(outbuf, len, val ? "true" : "false");
 }
 
 static gsize
