@@ -342,15 +342,16 @@ lua_logger_out_boolean(lua_State *L, int pos, char *outbuf, gsize len)
 static gsize
 lua_logger_out_userdata(lua_State *L, int pos, char *outbuf, gsize len)
 {
-	int r = 0, top;
+	gsize r = 0;
+	int top;
 	const char *str = NULL;
 	gboolean converted_to_str = FALSE;
-
-	top = lua_gettop(L);
 
 	if (!lua_getmetatable(L, pos)) {
 		return 0;
 	}
+
+	top = lua_gettop(L);
 
 	lua_pushstring(L, "__index");
 	lua_gettable(L, -2);
@@ -611,10 +612,10 @@ gsize lua_logger_out(lua_State *L, int pos,
 			  char *outbuf, gsize len,
 			  enum lua_logger_escape_type esc_type)
 {
-    struct lua_logger_trace tr;
-    memset(&tr, 0, sizeof(tr));
+	struct lua_logger_trace tr;
+	memset(&tr, 0, sizeof(tr));
 
-    return lua_logger_out_type(L, pos, outbuf, len, &tr, esc_type);
+	return lua_logger_out_type(L, pos, outbuf, len, &tr, esc_type);
 }
 
 static const char *
