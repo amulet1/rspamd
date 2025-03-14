@@ -118,7 +118,7 @@ rspamd_redis_get_servers(struct rspamd_fuzzy_backend_redis *ctx,
 	else {
 		char outbuf[8192];
 
-		lua_logger_out(L, -2, outbuf, sizeof(outbuf) - 1,
+		lua_logger_out(L, -2, outbuf, sizeof(outbuf),
 							LUA_ESCAPE_UNPRINTABLE);
 
 		msg_err("cannot get %s upstreams for Redis fuzzy storage %s; table content: %s",

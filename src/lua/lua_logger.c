@@ -281,8 +281,8 @@ lua_logger_char_safe(int t, unsigned int esc_type)
 
 static gsize
 lua_logger_out_str(lua_State *L, int pos,
-			   char *outbuf, gsize len,
-			   enum lua_logger_escape_type esc_type)
+				   char *outbuf, gsize len,
+				   enum lua_logger_escape_type esc_type)
 {
 	static const char hexdigests[16] = "0123456789abcdef";
 	gsize slen;
@@ -339,8 +339,7 @@ lua_logger_out_boolean(lua_State *L, int pos, char *outbuf, gsize len)
 static gsize
 lua_logger_out_userdata(lua_State *L, int pos, char *outbuf, gsize len)
 {
-	gsize r = 0;
-	int top;
+	int r = 0, top;
 	const char *str = NULL;
 	gboolean converted_to_str = FALSE;
 
@@ -606,8 +605,8 @@ gsize lua_logger_out_type(lua_State *L, int pos,
 }
 
 gsize lua_logger_out(lua_State *L, int pos,
-			  char *outbuf, gsize len,
-			  enum lua_logger_escape_type esc_type)
+						  char *outbuf, gsize len,
+						  enum lua_logger_escape_type esc_type)
 {
 	struct lua_logger_trace tr;
 	memset(&tr, 0, sizeof(tr));
