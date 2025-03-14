@@ -284,57 +284,35 @@ lua_logger_out_str(lua_State *L, int pos,
 				   char *outbuf, gsize len,
 				   enum lua_logger_escape_type esc_type)
 {
-	gsize slen, flen;
-	const char *str = lua_tolstring(L, pos, &slen);
 	static const char hexdigests[16] = "0123456789abcdef";
-	gsize r = 0, s;
+	gsize slen;
+	const unsigned char *str = lua_tolstring(L, pos, &slen);
+	unsigned char c;
+	char *out = outbuf;
 
 	if (str) {
-		gboolean normal = TRUE;
-		flen = MIN(slen, len - 1);
-
-		for (r = 0; r < flen; r++) {
-			if (!lua_logger_char_safe(str[r], esc_type)) {
-				normal = FALSE;
-				break;
+		while (slen > 0 && len > 1) {
+			c = *str++;
+			if (lua_logger_char_safe(c, esc_type)) {
+				*out++ = c;
 			}
-		}
-
-		if (normal) {
-			r = rspamd_strlcpy(outbuf, str, flen + 1);
-		}
-		else {
-			/* Need to escape non-printed characters */
-			r = 0;
-			s = 0;
-
-			while (slen > 0 && len > 1) {
-				if (!lua_logger_char_safe(str[s], esc_type)) {
-					if (len >= 3) {
-						outbuf[r++] = '\\';
-						outbuf[r++] = hexdigests[((str[s] >> 4) & 0xF)];
-						outbuf[r++] = hexdigests[((str[s]) & 0xF)];
-
-						len -= 2;
-					}
-					else {
-						outbuf[r++] = '?';
-					}
-				}
-				else {
-					outbuf[r++] = str[s];
-				}
-
-				s++;
-				slen--;
-				len--;
+			else if (len > 3) {
+				/* Need to escape non-printed characters */
+				*out++ = '\\';
+				*out++ = hexdigests[c >> 4];
+				*out++ = hexdigests[c & 0xF];
+				len -= 2;
 			}
-
-			outbuf[r] = '\0';
+			else {
+				*out++ = '?';
+			}
+			--slen;
+			--len;
 		}
+		*out = 0;
 	}
 
-	return r;
+	return out - outbuf;
 }
 
 static gsize
