@@ -452,7 +452,6 @@ rspamd_printf_append_char(const char *buf, glong buflen, gpointer ud)
 	glong wr;
 
 	if (dst->remain <= 0) {
-g_assert(dst->remain == 0);
 		return dst->remain;
 	}
 
