@@ -319,18 +319,13 @@ static gsize
 lua_logger_out_num(lua_State *L, int pos, char *outbuf, gsize len)
 {
 	double num = lua_tonumber(L, pos);
-	glong inum;
-	gsize r = 0;
+	glong inum = (glong) num;
 
-	if ((double) (glong) num == num) {
-		inum = num;
-		r = rspamd_snprintf(outbuf, len + 1, "%l", inum);
-	}
-	else {
-		r = rspamd_snprintf(outbuf, len + 1, "%f", num);
+	if ((double) inum == num) {
+		return rspamd_snprintf(outbuf, len, "%l", inum);
 	}
 
-	return r;
+	return rspamd_snprintf(outbuf, len, "%f", num);
 }
 
 static gsize
