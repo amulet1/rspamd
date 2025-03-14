@@ -468,7 +468,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	}
 
 	trace->traces[trace->cur_level % TRACE_POINTS] = self;
-	trace->cur_level++;
+	++trace->cur_level;
 
 	lua_pushvalue(L, pos);
 	r = rspamd_snprintf(d, remain, "{");
@@ -553,7 +553,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	r = rspamd_snprintf(d, remain, "}");
 	d += r;
 
-	trace->cur_level--;
+	--trace->cur_level;
 
 	return (d - outbuf);
 }
