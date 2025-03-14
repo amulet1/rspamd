@@ -337,11 +337,8 @@ static gsize
 lua_logger_out_boolean(lua_State *L, int pos, char *outbuf, gsize len)
 {
 	gboolean val = lua_toboolean(L, pos);
-	gsize r = 0;
 
-	r = rspamd_strlcpy(outbuf, val ? "true" : "false", len + 1);
-
-	return r;
+	return rspamd_snprintf(outbuf, len, val ? "true" : "false");
 }
 
 static gsize
@@ -437,9 +434,8 @@ lua_logger_out_userdata(lua_State *L, int pos, char *outbuf, gsize len)
 #define MOVE_BUF(d, remain, r)  \
 	(d) += (r);                 \
 	(remain) -= (r);            \
-	if ((remain) == 0) {        \
-		lua_settop(L, old_top); \
-		break;                  \
+	if ((remain) <= 1) {        \
+		goto oob; \
 	}
 
 static gsize
@@ -463,7 +459,7 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	/* Check if we have seen this pointer */
 	for (i = 0; i < TRACE_POINTS; i++) {
 		if (trace->traces[i] == self) {
-			r = rspamd_snprintf(d, remain + 1, "ref(%p)", self);
+			r = rspamd_snprintf(d, remain, "ref(%p)", self);
 
 			d += r;
 
@@ -475,9 +471,8 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 	trace->cur_level++;
 
 	lua_pushvalue(L, pos);
-	r = rspamd_snprintf(d, remain + 1, "{");
-	remain -= r;
-	d += r;
+	r = rspamd_snprintf(d, remain, "{");
+	MOVE_BUF(d, remain, r);
 
 	/* Get numeric keys (ipairs) */
 	for (i = 1;; i++) {
@@ -491,16 +486,16 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 		last_seq = i;
 
 		if (!first) {
-			r = rspamd_snprintf(d, remain + 1, ", ");
+			r = rspamd_snprintf(d, remain, ", ");
 			MOVE_BUF(d, remain, r);
 		}
 
-		r = rspamd_snprintf(d, remain + 1, "[%d] = ", i);
+		r = rspamd_snprintf(d, remain, "[%d] = ", i);
 		MOVE_BUF(d, remain, r);
 		tpos = lua_gettop(L);
 
 		if (lua_topointer(L, tpos) == self) {
-			r = rspamd_snprintf(d, remain + 1, "__self");
+			r = rspamd_snprintf(d, remain, "__self");
 		}
 		else {
 			r = lua_logger_out_type(L, tpos, d, remain, trace, esc_type);
@@ -529,20 +524,20 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 		}
 
 		if (!first) {
-			r = rspamd_snprintf(d, remain + 1, ", ");
+			r = rspamd_snprintf(d, remain, ", ");
 			MOVE_BUF(d, remain, r);
 		}
 
 		/* Preserve key */
 		lua_pushvalue(L, -2);
-		r = rspamd_snprintf(d, remain + 1, "[%s] = ",
+		r = rspamd_snprintf(d, remain, "[%s] = ",
 							lua_tostring(L, -1));
 		lua_pop(L, 1); /* Remove key */
 		MOVE_BUF(d, remain, r);
 		tpos = lua_gettop(L);
 
 		if (lua_topointer(L, tpos) == self) {
-			r = rspamd_snprintf(d, remain + 1, "__self");
+			r = rspamd_snprintf(d, remain, "__self");
 		}
 		else {
 			r = lua_logger_out_type(L, tpos, d, remain, trace, esc_type);
@@ -552,10 +547,11 @@ lua_logger_out_table(lua_State *L, int pos, char *outbuf, gsize len,
 		first = FALSE;
 	}
 
-	lua_settop(L, old_top);
-
-	r = rspamd_snprintf(d, remain + 1, "}");
+	r = rspamd_snprintf(d, remain, "}");
 	d += r;
+
+oob:
+	lua_settop(L, old_top);
 
 	trace->cur_level--;
 
