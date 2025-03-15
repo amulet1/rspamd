@@ -561,6 +561,9 @@ g_assert(max > 0);
 	dst.pos = dst.begin;
 	dst.remain = max - 1;
 	(void) rspamd_vprintf_common(rspamd_printf_append_char, &dst, fmt, args);
+
+g_assert(dst.pos >= buf);
+
 	*dst.pos = '\0';
 
 	return dst.pos;
