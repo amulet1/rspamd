@@ -555,17 +555,14 @@ rspamd_vsnprintf(char *buf, glong max, const char *fmt, va_list args)
 {
 	struct rspamd_printf_char_buf dst;
 
-if (max <= 0) {
- g_printerr("ERROR: max <= 0, max=%d", max);
- g_assert(max == 0);
- dst.pos = dst.begin;
-} else {
+g_assert(max > 0);
+
 	dst.begin = buf;
 	dst.pos = dst.begin;
 	dst.remain = max - 1;
 	(void) rspamd_vprintf_common(rspamd_printf_append_char, &dst, fmt, args);
 	*dst.pos = '\0';
-}
+
 	return dst.pos;
 }
 
