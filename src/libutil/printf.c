@@ -543,8 +543,6 @@ glong rspamd_snprintf(char *buf, glong max, const char *fmt, ...)
 	char *r;
 	va_list args;
 
-g_assert(max > 0);
-
 	va_start(args, fmt);
 	r = rspamd_vsnprintf(buf, max, fmt, args);
 	va_end(args);

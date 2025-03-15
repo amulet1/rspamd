@@ -452,7 +452,6 @@ rspamadm_lua_message_handler(lua_State *L, int argc, char **argv)
 				rspamd_printf("lua callback for %s returned:\n", argv[i]);
 
 				for (j = old_top + 1; j <= lua_gettop(L); j++) {
-					memset(&tr, 0, sizeof(tr));
 					lua_logger_out(L, j, outbuf, sizeof(outbuf),
 										LUA_ESCAPE_UNPRINTABLE);
 					rspamd_printf("%s\n", outbuf);
