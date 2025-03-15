@@ -351,7 +351,7 @@ lua_logger_out_num(lua_State *L, int pos, char *outbuf, gsize len,
 		r = rspamd_snprintf(outbuf, len + 1, "%l", inum);
 	}
 	else {
-		r = rspamd_snprintf(outbuf, len + 1, "%f", num);
+		r = rspamd_snprintf(outbuf, len, "%f", num);
 	}
 
 	return r;
