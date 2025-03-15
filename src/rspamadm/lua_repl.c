@@ -391,7 +391,6 @@ rspamadm_lua_message_handler(lua_State *L, int argc, char **argv)
 	gpointer map;
 	gsize len;
 	char outbuf[8192];
-	struct lua_logger_trace tr;
 
 	if (argv[1] == NULL) {
 		rspamd_printf("no callback is specified\n");
@@ -454,7 +453,7 @@ rspamadm_lua_message_handler(lua_State *L, int argc, char **argv)
 
 				for (j = old_top + 1; j <= lua_gettop(L); j++) {
 					memset(&tr, 0, sizeof(tr));
-					lua_logger_out_type(L, j, outbuf, sizeof(outbuf), &tr,
+					lua_logger_out(L, j, outbuf, sizeof(outbuf),
 										LUA_ESCAPE_UNPRINTABLE);
 					rspamd_printf("%s\n", outbuf);
 				}
